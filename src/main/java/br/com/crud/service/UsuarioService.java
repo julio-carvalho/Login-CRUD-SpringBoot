@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import br.com.crud.model.Usuario;
@@ -15,7 +16,14 @@ public class UsuarioService {
 	@Autowired
 	private UsuarioRepository usuarioRepository;
 	
+	private final PasswordEncoder encoder;
+	
+	public UsuarioService(PasswordEncoder encoder) {
+		this.encoder = encoder;
+	} 
+	
 	public Usuario createUsuario(Usuario usuario) {
+		usuario.setSenha(encoder.encode(usuario.getSenha()));
 		return usuarioRepository.save(usuario);
 	}
 	
@@ -45,9 +53,9 @@ public class UsuarioService {
 		usuarioRepository.save(UsuarioUpdate.get());
 	}
 	
-	private void atualizarDados(Optional<Usuario> UsuarioUpdate, Usuario Usuario) {
-		UsuarioUpdate.get().setNome(Usuario.getNome());
-		UsuarioUpdate.get().setCpf(Usuario.getCpf());
-		UsuarioUpdate.get().setSenha(Usuario.getSenha());
+	private void atualizarDados(Optional<Usuario> UsuarioUpdate, Usuario usuario) {
+		UsuarioUpdate.get().setNome(usuario.getNome());
+		UsuarioUpdate.get().setCpf(usuario.getCpf());
+		UsuarioUpdate.get().setSenha(encoder.encode(usuario.getSenha()));
 	}
 }
